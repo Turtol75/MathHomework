@@ -1,0 +1,94 @@
+class Tower {
+    constructor(hp, range, type) {
+        this.hp = hp;
+        this.range = range;
+        this.type = type;
+        this.isActive = false;
+    }
+
+    activate() {
+        this.isActive = true;
+    }
+
+    takeDamage(damage) {
+        this.hp -= damage;
+        if (this.hp <= 0) this.destroy();
+    }
+
+    destroy() {
+        console.log(`${this.type} Tower destroyed.`);
+    }
+}
+
+class Card {
+    constructor(name, elixirCost, stats) {
+        this.name = name;
+        this.elixirCost = elixirCost;
+        this.stats = stats;
+    }
+}
+
+class Player {
+    constructor(name) {
+        this.name = name;
+        this.elixir = 0;
+        this.deck = [];
+        this.hand = [];
+    }
+
+    addCard(card) {
+        this.deck.push(card);
+    }
+
+    cycleCards() {
+        if (this.hand.length < 8) {
+            const card = this.deck.shift();
+            this.hand.push(card);
+        }
+    }
+
+    deployCard(card, position) {
+        if (this.elixir >= card.elixirCost) {
+            this.elixir -= card.elixirCost;
+            console.log(`${this.name} deployed ${card.name} at ${position}.`);
+        } else {
+            console.log(`${this.name} does not have enough elixir.`);
+        }
+    }
+}
+
+class Game {
+    constructor(player1, player2) {
+        this.player1 = player1;
+        this.player2 = player2;
+        this.towers = {
+            player1: [new Tower(1000, 5, 'Princess'), new Tower(1000, 5, 'Princess'), new Tower(2000, 6, 'King')],
+            player2: [new Tower(1000, 5, 'Princess'), new Tower(1000, 5, 'Princess'), new Tower(2000, 6, 'King')]
+        };
+        this.currentPlayer = player1;
+    }
+
+    start() {
+        console.log('Game started between ' + this.player1.name + ' and ' + this.player2.name);
+    }
+
+    switchPlayer() {
+        this.currentPlayer = this.currentPlayer === this.player1 ? this.player2 : this.player1;
+    }
+
+    updateElixir() {
+        this.currentPlayer.elixir = Math.min(this.currentPlayer.elixir + 1, 10);
+    }
+}
+
+// Example usage
+const player1 = new Player('Player 1');
+const player2 = new Player('Player 2');
+
+const game = new Game(player1, player2);
+game.start();
+
+const card1 = new Card('Knight', 3, { hp: 200, damage: 50 });
+player1.addCard(card1);
+player1.cycleCards();
+player1.deployCard(card1, 'A1');
